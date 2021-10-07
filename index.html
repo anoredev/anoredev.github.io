@@ -75,6 +75,20 @@
             align-items: center;
         }
 
+        @media screen and (max-height: 630px) and (min-width: 900px) {
+            #controls {
+                top: 50%;
+                left: calc(100% - 150px);
+                transform: translate(-50%, -50%);
+            }
+
+            #status {
+                top: 50%;
+                left: calc(150px);
+                transform: translate(-50%, -50%);
+            }
+        }
+
         #restart img {
             margin-right: 10px;
             transition: all 0.75s ease;
