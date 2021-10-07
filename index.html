@@ -269,7 +269,7 @@
                     cell.classList.add('game-cell');
                     cell.onclick = () => {
                         if (game.gameOver) {
-                            showStatus("Игра уже окончена");
+                            showStatus("Игра окончена");
                         } else {
                             let status = game.add(j, i);
                             if (status.busy) {
