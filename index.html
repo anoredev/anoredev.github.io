@@ -15,6 +15,7 @@
             margin: 0;
             padding: 0;
             font-family: 'Inter';
+            user-select: none;
         }
 
         #wrap {
@@ -47,10 +48,21 @@
             font-size: 30px;
             font-family: 'Sniglet';
             font-weight: 800;
+            color: transparent;
+            transition: all .25s ease;
+        }
+
+        .game-cell-busy {
+            color: black;
         }
 
         .game-cell-combo {
             color: #1c7eff;
+        }
+
+        .game-cell-alert {
+            color: #ff4646;
+            animation: shake 0.5s ease;
         }
 
         #status {
@@ -100,6 +112,32 @@
 
         .hidden {
             opacity: 0;
+        }
+
+        @keyframes shake {
+            10%, 90% {
+                transform: translate3d(-1px, 0, 0);
+            }
+            
+            20%, 80% {
+                transform: translate3d(1px, 0, 0);
+            }
+
+            30%, 70% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            40%, 60% {
+                transform: translate3d(1px, 0, 0);
+            }
+
+            50% {
+                transform: translate3d(-1px, 0, 0);
+            }
+
+            100% {
+                transform: translate3d(1px, 0, 0);
+            }
         }
     </style>
 </head>
@@ -165,6 +203,7 @@
             cell.isEmpty = false;
             cell.player = this.currentPlayer;
             this.nextPlayer();
+            return {};
         }
 
         isLineClear(line) {
@@ -233,7 +272,11 @@
                         if (game.gameOver) {
                             showStatus("Игра уже окончена");
                         } else {
-                            game.add(j, i);
+                            let status = game.add(j, i);
+                            if (status.busy) {
+                                cell.classList.add('game-cell-alert');
+                                setTimeout(() => cell.classList.remove('game-cell-alert'), 300);
+                            }
                             this.update();
                         }
                     };
@@ -260,6 +303,7 @@
                     if (!stateCell.isEmpty) {
                         let player = stateCell.player;
                         cell.innerText = player.sign;
+                        cell.classList.add('game-cell-busy');
                         if (stateCell.isCombo) {
                             cell.classList.add('game-cell-combo');
                         }
@@ -272,6 +316,7 @@
             this.game.start();
             this.cells.forEach(row => row.forEach(cell => {
                 cell.innerText = '';
+                cell.classList.remove('game-cell-busy');
                 cell.classList.remove('game-cell-combo');
             }));
         }
