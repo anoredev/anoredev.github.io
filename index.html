@@ -1,338 +1,43 @@
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tic Tac Toe</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Sniglet:wght@400;800&display=swap');
-
-        body {
-            width: 100vw;
-            height: 100vh;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter';
-            user-select: none;
-        }
-
-        #wrap {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #game-field {
-            display: grid;
-            grid-gap: 20px;
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .game-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .game-cell {
-            width: 80px;
-            height: 80px;
-            background: rgb(228, 228, 228);
-            border-radius: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            font-family: 'Sniglet';
-            font-weight: 800;
-            color: transparent;
-            transition: all .25s ease;
-        }
-
-        .game-cell-busy {
-            color: black;
-        }
-
-        .game-cell-combo {
-            color: #1c7eff;
-        }
-
-        .game-cell-alert {
-            animation: shake 0.5s ease;
-        }
-
-        #status {
-            position: absolute;
-            top: 100px;
-            left: 50%;
-            transform: translate(-50%, 0);
-            transition: all .5s ease;
-        }
-
-        #controls {
-            position: absolute;
-            top: calc(100% - 100px);
-            left: 50%;
-            transform: translate(-50%, 0);
-        }
-
-        #restart {
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        @media screen and (max-height: 630px) and (min-width: 900px) {
-            #controls {
-                top: 50%;
-                left: calc(100% - 150px);
-                transform: translate(-50%, -50%);
-            }
-
-            #status {
-                top: 50%;
-                left: calc(150px);
-                transform: translate(-50%, -50%);
-            }
-        }
-
-        #restart img {
-            margin-right: 10px;
-            transition: all 0.75s ease;
-        }
-
-        #restart:hover > img {
-            transform: rotate(180deg);
-        }
-
-        .hidden {
-            opacity: 0;
-        }
-
-        @keyframes shake {
-            10%, 90% {
-                transform: translate3d(-1px, 0, 0);
-            }
-            
-            20%, 80% {
-                transform: translate3d(1px, 0, 0);
-            }
-
-            30%, 70% {
-                transform: translate3d(-1px, 0, 0);
-            }
-
-            40%, 60% {
-                transform: translate3d(1px, 0, 0);
-            }
-
-            50% {
-                transform: translate3d(-1px, 0, 0);
-            }
-
-            100% {
-                transform: translate3d(1px, 0, 0);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
     <div id="status" class="hidden"></div>
     <div id="controls">
         <div id="restart" onclick="wrap.restart()">
             <img src="https://img.icons8.com/material-outlined/24/000000/restart--v1.png"/>
-            <span>Начать заного</span>
+            <span>Начать заново</span>
         </div>
     </div>
     <div id="wrap">
     </div>
 </body>
+<script type="text/javascript" src="script.js"></script>
 <script>
-    class Player {
-        constructor(name, sign) {
-            this.name = name;
-            this.sign = sign;
-            this.wins = 0;
-            this.loses = 0;
-        }
-    }
-
-    class Cell {
-        constructor() {
-            this.isEmpty = true;
-            this.isCombo = false;
-            this.player = false;
-        }
-    }
-
-
-    class Game {
-        constructor(width, height, players) {
-            this.width = width;
-            this.height = height;
-            this.players = players;
-            this.start();
-        }
-
-        start() {
-            this.gameOver = false;
-            this.playerIndex = 0;
-            this.currentPlayer = this.players[this.playerIndex];
-            this.matrix = [...new Array(this.height)].map(() => [...new Array(this.width)].map(() => new Cell()));
-        }
-
-        nextPlayer() {
-            this.playerIndex = this.playerIndex === this.players.length - 1 ? 0 : this.playerIndex + 1;
-            this.currentPlayer = this.players[this.playerIndex];
-        }
-
-        add(x, y) {
-            let cell = this.matrix[y][x];
-            if (cell.player) {
-                return {
-                    busy: true,
-                    player: cell.player
-                };
-            }
-            cell.isEmpty = false;
-            cell.player = this.currentPlayer;
-            this.nextPlayer();
-            return {};
-        }
-
-        isLineClear(line) {
-            console.log(line);
-            console.log(line.every(e => line[0].player && e.player === line[0].player));
-            return line.every(e => line[0].player && e.player === line[0].player);
-        }
-
-        setCombo(line) {
-            line.forEach(cell => {
-                cell.isCombo = true;
-            })
-        }
-
-        update() {
-            let matrix = this.matrix;
-            let winner;
-
-            /* Row checking */
-            for (let row of matrix) {
-                if (this.isLineClear(row)) {
-                    this.setCombo(row);
-                    winner = row[0].player;
-                }
-            }
-
-            /* Column checking */
-            for (let column of matrix[0].map((_, i) => matrix.map(r => r[i]))) {
-                if (this.isLineClear(column)) {
-                    this.setCombo(column);
-                    winner = column[0].player;
-                }
-            }
-
-            /* Diagonals checking */
-            for (let diagonal of [matrix.map((r, i) => r[i]), matrix.map((r, i) => r[matrix.length - i - 1])]) {
-                if (this.isLineClear(diagonal)) {
-                    this.setCombo(diagonal);
-                    winner = diagonal[0].player;
-                }
-            }
-
-            if (winner || matrix.every(row => row.every(cell => cell.player))) {
-                this.gameOver = true;
-                return winner ? { winner: winner } : { draw: true };
-            } else {
-                return {};
-            }
-        }
-    }
-
-    class UI {
-        constructor(game, container) {
-            let gameField = document.createElement('div');
-            gameField.id = 'game-field';
-            container.appendChild(gameField);
-
-            let rule = document.styleSheets[0].cssRules[4];
-            rule.style.gridTemplateColumns = `repeat(${game.width}, 1fr)`;
-
-            let cells = [...new Array(game.height)].map(() => [...new Array(game.width)].map(() => document.createElement('div')));
-            cells.forEach((row, i) => {
-                row.forEach((cell, j) => {
-                    cell.classList.add('game-cell');
-                    cell.onclick = () => {
-                        if (game.gameOver) {
-                            showStatus("Игра окончена");
-                        } else {
-                            let status = game.add(j, i);
-                            if (status.busy) {
-                                cell.classList.add('game-cell-alert');
-                                setTimeout(() => cell.classList.remove('game-cell-alert'), 300);
-                            }
-                            this.update();
-                        }
-                    };
-                    gameField.appendChild(cell);
-                });
-            });
-
-            this.game = game;
-            this.gameField = gameField;
-            this.cells = cells;
-        }
-
-        update() {
-            let state = this.game.update();
-            if (state.winner) {
-                showStatus(`Игрок ${state.winner.name} победил!`);
-            } else if (state.draw) {
-                showStatus(`Ничья!`);
-            }
-            this.cells.forEach((row, i) => {
-                row.forEach((cell, j) => {
-                    let stateCell = this.game.matrix[i][j];
-                    console.log(stateCell);
-                    if (!stateCell.isEmpty) {
-                        let player = stateCell.player;
-                        cell.innerText = player.sign;
-                        cell.classList.add('game-cell-busy');
-                        if (stateCell.isCombo) {
-                            cell.classList.add('game-cell-combo');
-                        }
-                    }
-                });
-            });
-        }
-
-        restart() {
-            this.game.start();
-            this.cells.forEach(row => row.forEach(cell => {
-                cell.innerText = '';
-                cell.classList.remove('game-cell-busy');
-                cell.classList.remove('game-cell-combo');
-            }));
-        }
-    }
-
-    const status = document.getElementById("status");
-
     const showStatus = text => {
-        status.innerHTML = text;
-        status.classList.remove("hidden");
-        setTimeout(() => status.classList.add("hidden"), 2000);
+        statusElement.innerHTML = text;
+        statusElement.classList.remove("hidden");
+        setTimeout(() => statusElement.classList.add("hidden"), 2000);
     }
 
-    const game = new Game(3, 3, [
+    const statusElement = document.getElementById("status");
+    const wrapElement = document.getElementById('wrap');
+
+    const width = 3;
+    const height = 3;
+    const players = [
         new Player('1', 'X'),
         new Player('2', 'O')
-    ]);
-    const wrap = new UI(game, document.getElementById('wrap'));
+    ];
+
+    const game = new Game(width, height, players);
+    const wrap = new UI(game, wrapElement);
 </script>
 </html>

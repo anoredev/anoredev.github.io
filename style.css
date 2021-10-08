@@ -1,0 +1,135 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Sniglet:wght@400;800&display=swap');
+body {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter';
+    user-select: none;
+}
+
+#wrap {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-field {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.game-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.game-cell {
+    width: 80px;
+    height: 80px;
+    background: rgb(228, 228, 228);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+    font-family: 'Sniglet';
+    font-weight: 800;
+    color: transparent;
+    transition: all .25s ease;
+}
+
+.game-cell-busy {
+    color: black;
+}
+
+.game-cell-combo {
+    color: #1c7eff;
+}
+
+.game-cell-alert {
+    animation: shake 0.5s ease;
+}
+
+#status {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translate(-50%, 0);
+    transition: all .5s ease;
+}
+
+#controls {
+    position: absolute;
+    top: calc(100% - 100px);
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+#restart {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media screen and (max-height: 630px) {
+    #controls {
+        top: 30px;
+        left: calc(100% - 30px);
+    }
+
+    #status {
+        top: 30px;
+    }
+
+    #restart span {
+        display: none;
+    }
+}
+
+#restart img {
+    margin-right: 10px;
+    transition: all 0.75s ease;
+}
+
+#restart:hover > img {
+    transform: rotate(180deg);
+}
+
+.hidden {
+    opacity: 0;
+}
+
+@keyframes shake {
+    10%, 90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+    
+    20%, 80% {
+        transform: translate3d(1px, 0, 0);
+    }
+
+    30%, 70% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    40%, 60% {
+        transform: translate3d(1px, 0, 0);
+    }
+
+    50% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    100% {
+        transform: translate3d(1px, 0, 0);
+    }
+}
